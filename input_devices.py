@@ -2,7 +2,7 @@ from global_state import GlobalState
 from v_math import *
 
 from OpenGL._bytes import as_8_bit
-from OpenGL.GLUT import glutWarpPointer
+from OpenGL.GLUT import *
 
 
 class KeyboardEventCallbacks:
@@ -120,15 +120,49 @@ class MouseEventCallbacks:
         self.old_y = g_state.mouse.y
         self.delta_x = 0
         self.delta_y = 0
+        self.enabled_motion = False
 
     def passive_motion_func(self, x, y):
-        print('passive ({0}; {1})'.format(x, y))
+        self.old_x = self.state.mouse.x
+        self.old_y = self.state.mouse.y
+        self.state.mouse.x = x
+        self.state.mouse.y = y
+        self.delta_x = self.old_x - x
+        self.delta_y = self.old_y - y
 
     def motion_func(self, x, y):
-        print('motion ({0}; {1})'.format(x, y))
+        self.passive_motion_func(x, y)
 
     def mouse_func(self, key, state, x, y):
-        print('mouse ({0}; {1})'.format(x, y))
+        if key == GLUT_LEFT_BUTTON:
+            if state == GLUT_DOWN:
+                self.enabled_motion = True
+            else:
+                self.enabled_motion = False
 
     def process_mouse(self):
-        pass
+        if self.enabled_motion:
+            mouse = self.state.mouse
+            camera = self.state.camera
+
+            self.delta_x *= mouse.sensitivity
+            self.delta_y *= mouse.sensitivity
+
+            camera.yaw += self.delta_x
+            camera.pitch -= self.delta_y
+
+            self.delta_x, self.delta_y = 0, 0
+
+            if camera.pitch > camera.max_pitch:
+                camera.pitch = camera.max_pitch
+
+            if camera.pitch < camera.min_pitch:
+                camera.pitch = camera.min_pitch
+
+            vec = [
+                cos(radians(camera.yaw)) * cos(radians(camera.pitch)),
+                sin(radians(camera.pitch)),
+                sin(radians(camera.yaw)) * cos(radians(camera.pitch))
+            ]
+
+            camera.direction = normalize_vec3f(vec)
