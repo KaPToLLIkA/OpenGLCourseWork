@@ -12,7 +12,7 @@ class GlobalState:
 
 class MouseState:
     def __init__(self, parent: GlobalState):
-        self.sensitivity = 0.1
+        self.sensitivity = 0.25
         self.x = 0
         self.y = 0
 
@@ -31,7 +31,7 @@ class KeyboardState:
 class CameraState:
     max_pitch = 89.99
     min_pitch = -89.99
-    delta_move = 1
+    delta_move = 0.6
     delta_yaw = 5
     delta_pitch = 5
 
