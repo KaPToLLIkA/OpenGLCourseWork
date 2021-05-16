@@ -1,5 +1,6 @@
 from OpenGL.GLUT import *
 
+from OPEN_GL_state import OPEN_GL_state
 from global_state import GlobalState, glDisable, glEnable
 from v_math import *
 
@@ -11,6 +12,7 @@ class KeyboardEventCallbacks:
     def keyboard_func(self, key, x, y):
         self.state.keyboard.keys_press_flags[key] = True
         keyboard = self.state.keyboard
+        scene = self.state.scene
         for l_id in range(0, 8):
             if keyboard.keys_press_flags[as_8_bit(str(l_id))]:
                 if self.state.scene.lights_enabled_flags[l_id]:
@@ -18,6 +20,11 @@ class KeyboardEventCallbacks:
                 else:
                     glEnable(self.state.scene.lights_ids[l_id])
                 self.state.scene.lights_enabled_flags[l_id] = not self.state.scene.lights_enabled_flags[l_id]
+
+        t_pressed = keyboard.keys_press_flags[as_8_bit('t')] or keyboard.keys_press_flags[as_8_bit('T')]
+
+        if t_pressed:
+            OPEN_GL_state.enable_textures = not OPEN_GL_state.enable_textures
 
     def keyboard_up_func(self, key, x, y):
         self.state.keyboard.keys_press_flags[key] = False

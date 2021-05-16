@@ -3,6 +3,8 @@ from math import *
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 
+from OPEN_GL_state import OPEN_GL_state
+
 
 class Drawable:
     def __init__(self):
@@ -338,8 +340,22 @@ class WoodenTable(Drawable):
         glRotatef(self.rotate['y'], 0, 1, 0)
         glRotatef(self.rotate['z'], 0, 0, 1)
 
+        if not OPEN_GL_state.enable_textures:
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 120)
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, (0, 0, 1, 1))
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, (0.5, 0.5, 0.5, 1))
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, (0.05, 0.05, 0.05, 1))
+
+            glPushMatrix()
+            glTranslatef(0, self.size['y'], 0)
+            glutSolidSphere(self.size['y'] * 0.25, 32, 32)
+            glPopMatrix()
+
         for obj in self.objects:
             obj.draw()
+
+        if not OPEN_GL_state.enable_textures:
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0)
 
         glPopMatrix()
 

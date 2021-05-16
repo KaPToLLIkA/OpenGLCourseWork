@@ -1,5 +1,6 @@
 from PIL import Image
 
+from OPEN_GL_state import OPEN_GL_state
 from global_state import GlobalState
 from input_devices import KeyboardEventCallbacks, MouseEventCallbacks
 from v_math import *
@@ -133,11 +134,28 @@ class Scene:
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, (0, 0, 0, 1))
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, (0, 0, 0, 1))
 
+        print(OPEN_GL_state.enable_textures)
+        if OPEN_GL_state.enable_textures:
+            glEnable(GL_TEXTURE_2D)
+            glEnable(GL_TEXTURE_GEN_S)
+            glEnable(GL_TEXTURE_GEN_T)
+        else:
+            glDisable(GL_TEXTURE_2D)
+            glDisable(GL_TEXTURE_GEN_S)
+            glDisable(GL_TEXTURE_GEN_T)
         # center
 
         for drawable_object in self.objects:
             drawable_object.draw()
 
+        if OPEN_GL_state.enable_textures:
+            glDisable(GL_TEXTURE_2D)
+            glDisable(GL_TEXTURE_GEN_T)
+            glDisable(GL_TEXTURE_GEN_S)
+        else:
+            glEnable(GL_TEXTURE_2D)
+            glEnable(GL_TEXTURE_GEN_T)
+            glEnable(GL_TEXTURE_GEN_S)
         # projection
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
